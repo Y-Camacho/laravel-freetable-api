@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get("/test", function() {
-    return ["todo correcto"];
+Route::get("/health", function() {
+    return response()->json([
+            'message' => 'Esto es freetable'
+        ]);
 });
