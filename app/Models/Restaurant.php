@@ -46,4 +46,10 @@ class Restaurant extends Model
     {
         return $this->hasOne(RestaurantImage::class)->where('is_cover', true);
     }
+
+    // Categorias
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_restaurant');
+    }
 }
