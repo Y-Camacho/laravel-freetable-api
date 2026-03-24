@@ -30,4 +30,20 @@ class Restaurant extends Model
     {
         return $this->hasMany(Comment::class);
     }
+
+    public function images()
+    {
+        return $this->hasMany(RestaurantImage::class);
+    }
+
+    public function menus()
+    {
+        return $this->hasMany(RestaurantMenu::class);
+    }
+
+    // imagen principal
+    public function coverImage()
+    {
+        return $this->hasOne(RestaurantImage::class)->where('is_cover', true);
+    }
 }
