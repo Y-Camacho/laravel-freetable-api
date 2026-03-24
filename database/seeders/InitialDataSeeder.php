@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Restaurant;
 use App\Models\RestaurantImage;
 use App\Models\RestaurantMenu;
@@ -16,9 +17,28 @@ class InitialDataSeeder extends Seeder
     public function run(): void
     {
         $categories = Category::all();
+        $clients = User::where('role', 'client')->get();
+
+        $commentSamples = [
+            'Muy buena experiencia, volveremos pronto.',
+            'Servicio rapido y comida sabrosa.',
+            'El ambiente es agradable y tranquilo.',
+            'Buena relacion calidad-precio.',
+            'Platos bien presentados y porciones correctas.',
+            'Excelente atencion del personal.',
+            'Nos encanto la comida y el trato.',
+            'Lugar recomendado para cenar en pareja.',
+            'Una opcion muy buena para ir con amigos.',
+            'Volveria sin duda, gran experiencia.',
+        ];
 
         if ($categories->count() < 6) {
             $this->command?->warn('No hay suficientes categorías. Ejecuta CategoriesSeeder primero.');
+            return;
+        }
+
+        if ($clients->isEmpty()) {
+            $this->command?->warn('No hay clientes disponibles. Ejecuta UsersSeeder primero.');
             return;
         }
 
@@ -80,6 +100,7 @@ class InitialDataSeeder extends Seeder
 
             $restaurant->images()->delete();
             $restaurant->menus()->delete();
+            $restaurant->comments()->delete();
 
             $selectedImages = $imageFiles->shuffle()->take(4)->values();
 
@@ -107,6 +128,19 @@ class InitialDataSeeder extends Seeder
                         ->title()
                         ->toString(),
                     'file_path' => $menuPath,
+                ]);
+            }
+
+            $totalComments = rand(4, 10);
+
+            for ($commentIndex = 0; $commentIndex < $totalComments; $commentIndex++) {
+                $author = $clients->random();
+
+                Comment::create([
+                    'user_id' => $author->id,
+                    'restaurant_id' => $restaurant->id,
+                    'content' => $commentSamples[array_rand($commentSamples)],
+                    'rating' => rand(30, 50) / 10,
                 ]);
             }
         }

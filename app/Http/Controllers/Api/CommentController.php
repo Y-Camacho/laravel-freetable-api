@@ -20,14 +20,18 @@ class CommentController extends Controller
     {
         $perPage = (int) $request->input('per_page', 10);
         $comments = $this->commentService->listByRestaurant($restaurant, $perPage);
+        $ratingSummary = $this->commentService->ratingSummaryByRestaurant($restaurant);
 
-        return CommentResource::collection($comments);
+        return CommentResource::collection($comments)->additional([
+            'meta' => $ratingSummary,
+        ]);
     }
 
     public function store(Request $request, Restaurant $restaurant): JsonResponse
     {
         $data = $request->validate([
             'content' => 'required|string|min:2|max:2000',
+            'rating' => ['required', 'regex:/^(?:[1-4](?:\\.5)?|5(?:\\.0)?)$/'],
         ]);
 
         $comment = $this->commentService->create($restaurant, $request->user(), $data);

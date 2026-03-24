@@ -12,8 +12,16 @@ class Comment extends Model
     protected $fillable = [
         'user_id',
         'restaurant_id',
-        'content'
+        'content',
+        'rating',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'rating' => 'decimal:1',
+        ];
+    }
 
     public function user()
     {
