@@ -3,43 +3,71 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RestaurantImageResource;
+use App\Http\Resources\RestaurantMenuResource;
+use App\Models\Restaurant;
+use App\Services\FileService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class FileController extends Controller
 {
-    public function uploadImage(Request $request, $restaurantId)
+    public function __construct(private readonly FileService $fileService)
     {
+    }
+
+    public function uploadImage(Request $request, Restaurant $restaurant): JsonResponse
+    {
+        if (!$this->canManageRestaurant($request, $restaurant)) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
         $request->validate([
             'image' => 'required|image|max:2048',
-            'is_cover' => 'boolean'
+            'is_cover' => 'boolean',
+            'alt' => 'nullable|string|max:255',
         ]);
 
-        $path = $request->file('image')->store('restaurants/images', 'public');
+        $image = $this->fileService->uploadImage(
+            $restaurant,
+            $request->file('image'),
+            (bool) $request->boolean('is_cover'),
+            $request->input('alt')
+        );
 
-        $image = RestaurantImage::create([
-            'restaurant_id' => $restaurantId,
-            'path' => $path,
-            'is_cover' => $request->is_cover ?? false
-        ]);
-
-        return response()->json($image);
+        return response()->json([
+            'message' => 'Imagen subida correctamente',
+            'data' => new RestaurantImageResource($image),
+        ], 201);
     }    
 
-    public function uploadMenu(Request $request, $restaurantId)
+    public function uploadMenu(Request $request, Restaurant $restaurant): JsonResponse
     {
+        if (!$this->canManageRestaurant($request, $restaurant)) {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
         $request->validate([
             'file' => 'required|mimes:pdf|max:5120',
             'name' => 'required|string'
         ]);
 
-        $path = $request->file('file')->store('restaurants/menus', 'public');
+        $menu = $this->fileService->uploadMenu(
+            $restaurant,
+            $request->file('file'),
+            $request->input('name')
+        );
 
-        $menu = RestaurantMenu::create([
-            'restaurant_id' => $restaurantId,
-            'name' => $request->name,
-            'file_path' => $path
-        ]);
+        return response()->json([
+            'message' => 'Menu subido correctamente',
+            'data' => new RestaurantMenuResource($menu),
+        ], 201);
+    }
 
-        return response()->json($menu);
+    private function canManageRestaurant(Request $request, Restaurant $restaurant): bool
+    {
+        $user = $request->user();
+
+        return $user->isAdmin() || ($user->isManager() && (int) $restaurant->manager_id === (int) $user->id);
     }
 }
