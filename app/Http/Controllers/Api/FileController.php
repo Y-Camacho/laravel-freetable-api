@@ -39,7 +39,14 @@ class FileController extends Controller
             'message' => 'Imagen subida correctamente',
             'data' => new RestaurantImageResource($image),
         ], 201);
-    }    
+    }
+
+    public function indexImages(Restaurant $restaurant)
+    {
+        $images = $this->fileService->listImagesByRestaurant($restaurant);
+
+        return RestaurantImageResource::collection($images);
+    }
 
     public function uploadMenu(Request $request, Restaurant $restaurant): JsonResponse
     {
@@ -62,6 +69,25 @@ class FileController extends Controller
             'message' => 'Menu subido correctamente',
             'data' => new RestaurantMenuResource($menu),
         ], 201);
+    }
+
+    public function indexMenus(Restaurant $restaurant)
+    {
+        $menus = $this->fileService->listMenusByRestaurant($restaurant);
+
+        return RestaurantMenuResource::collection($menus);
+    }
+
+    public function indexMedia(Restaurant $restaurant): JsonResponse
+    {
+        $images = $this->fileService->listImagesByRestaurant($restaurant);
+        $menus = $this->fileService->listMenusByRestaurant($restaurant);
+
+        return response()->json([
+            'restaurant_id' => $restaurant->id,
+            'images' => RestaurantImageResource::collection($images)->resolve(),
+            'menus' => RestaurantMenuResource::collection($menus)->resolve(),
+        ]);
     }
 
     private function canManageRestaurant(Request $request, Restaurant $restaurant): bool

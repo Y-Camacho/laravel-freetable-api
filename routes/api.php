@@ -30,6 +30,9 @@ Route::get('/categories', [RestaurantController::class, 'categories']);
 Route::get('/restaurants', [RestaurantController::class, 'index']);
 Route::get('/restaurants/{restaurant}', [RestaurantController::class, 'show']);
 Route::get('/restaurants/{restaurant}/comments', [CommentController::class, 'indexByRestaurant']);
+Route::get('/restaurants/{restaurant}/images', [FileController::class, 'indexImages']);
+Route::get('/restaurants/{restaurant}/menus', [FileController::class, 'indexMenus']);
+Route::get('/restaurants/{restaurant}/media', [FileController::class, 'indexMedia']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/restaurants', [RestaurantController::class, 'store']);

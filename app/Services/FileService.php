@@ -6,10 +6,26 @@ use App\Models\Restaurant;
 use App\Models\RestaurantImage;
 use App\Models\RestaurantMenu;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class FileService
 {
+    public function listImagesByRestaurant(Restaurant $restaurant): Collection
+    {
+        return $restaurant->images()
+            ->orderByDesc('is_cover')
+            ->latest()
+            ->get();
+    }
+
+    public function listMenusByRestaurant(Restaurant $restaurant): Collection
+    {
+        return $restaurant->menus()
+            ->latest()
+            ->get();
+    }
+
     public function uploadImage(Restaurant $restaurant, UploadedFile $file, bool $isCover = false, ?string $alt = null): RestaurantImage
     {
         return DB::transaction(function () use ($restaurant, $file, $isCover, $alt) {
