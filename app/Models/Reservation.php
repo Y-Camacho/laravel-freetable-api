@@ -14,7 +14,8 @@ class Reservation extends Model
         'restaurant_id',
         'reservation_time',
         'people',
-        'status'
+        'status',
+        'table_id'
     ];
 
     public function user()
@@ -25,5 +26,10 @@ class Reservation extends Model
     public function restaurant()
     {
         return $this->belongsTo(Restaurant::class);
+    }
+
+    public function table()
+    {
+        return $this->belongsTo(RestaurantTable::class);
     }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\FileController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\RestaurantController;
+use App\Http\Controllers\Api\AvailabilityController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,8 @@ Route::get('/restaurants/{restaurant}/images', [FileController::class, 'indexIma
 Route::get('/restaurants/{restaurant}/menus', [FileController::class, 'indexMenus']);
 Route::get('/restaurants/{restaurant}/media', [FileController::class, 'indexMedia']);
 
+Route::get('/restaurants/{restaurant}/availability', [AvailabilityController::class, 'index']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/restaurants', [RestaurantController::class, 'store']);
     Route::match(['put', 'patch'], '/restaurants/{restaurant}', [RestaurantController::class, 'update']);
@@ -41,7 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/restaurants/{restaurant}/categories', [RestaurantController::class, 'syncCategories']);
 
     Route::post('/restaurants/{restaurant}/images', [FileController::class, 'uploadImage']);
-    Route::post('/restaurants/{restaurant}/menus', [FileController::class, 'uploadMenu']);
+    Route::post('/restaurants/{restaurant}/menus', [FileController::class, 'uploadMenu']);    
 
     Route::post('/restaurants/{restaurant}/reservations', [ReservationController::class, 'store']);
     Route::get('/reservations/me', [ReservationController::class, 'indexMine']);

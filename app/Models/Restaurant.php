@@ -42,6 +42,26 @@ class Restaurant extends Model
         return $this->hasMany(RestaurantMenu::class);
     }
 
+    public function openingHours()
+    {
+        return $this->hasMany(OpeningHour::class);
+    }
+
+    public function tables()
+    {
+        return $this->hasMany(RestaurantTable::class);
+    }
+
+    public function config()
+    {
+        return $this->hasOne(RestaurantConfig::class);
+    }
+
+    public function closedDates()
+    {
+        return $this->hasMany(ClosedDate::class);
+    }
+
     // imagen principal
     public function coverImage()
     {
