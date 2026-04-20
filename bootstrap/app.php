@@ -18,12 +18,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
     ->withMiddleware(function (Middleware $middleware) {
 
-        // 🔹 Middleware global API (equivalente a grupo api)
+        // Middleware global API (equivalente a grupo api)
         $middleware->api(prepend: [
             // vacío porque NO usamos stateful (Sanctum SPA)
         ]);
 
-        // 🔹 Alias de middleware (como antes en Kernel)
+        // Alias de middleware (como antes en Kernel)
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,

@@ -18,14 +18,14 @@ class ReservationService
             $dateTime = Carbon::parse($data['reservation_time']);
             $people = $data['people'];
 
-            // 🔎 Buscar mesa disponible
+            // Buscar mesa disponible
             $table = $this->findAvailableTable($restaurant, $dateTime, $people);
 
             if (!$table) {
                 throw new \Exception('No hay disponibilidad para esa hora');
             }
 
-            // ✅ Crear reserva
+            // Crear reserva
             $reservation = Reservation::create([
                 'user_id' => $user->id,
                 'restaurant_id' => $restaurant->id,

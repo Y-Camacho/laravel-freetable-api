@@ -29,6 +29,7 @@ Route::prefix('auth')->group(function () {
 
 Route::get('/categories', [RestaurantController::class, 'categories']);
 Route::get('/restaurants', [RestaurantController::class, 'index']);
+Route::get('/restaurants/nearby', [RestaurantController::class, 'nearby']);
 Route::get('/restaurants/{restaurant}', [RestaurantController::class, 'show']);
 Route::get('/restaurants/{restaurant}/comments', [CommentController::class, 'indexByRestaurant']);
 Route::get('/restaurants/{restaurant}/images', [FileController::class, 'indexImages']);

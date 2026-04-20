@@ -14,6 +14,12 @@ use Illuminate\Support\Str;
 
 class InitialDataSeeder extends Seeder
 {
+    private const BASE_LATITUDE = 41.790945;
+
+    private const BASE_LONGITUDE = 0.813946;
+
+    private const MAX_RADIUS_KM = 20;
+
     public function run(): void
     {
         $categories = Category::all();
@@ -81,6 +87,12 @@ class InitialDataSeeder extends Seeder
                 $manager->assignRole('manager');
             }
 
+            $coordinates = $this->generateCoordinatesWithinRadius(
+                self::BASE_LATITUDE,
+                self::BASE_LONGITUDE,
+                self::MAX_RADIUS_KM,
+            );
+
             $restaurant = Restaurant::updateOrCreate(
                 ['manager_id' => $manager->id],
                 [
@@ -88,6 +100,8 @@ class InitialDataSeeder extends Seeder
                     'description' => "Descripción inicial del Restaurante {$i}.",
                     'address' => "Calle Demo {$i}, Ciudad",
                     'phone' => '600000' . str_pad((string) $i, 3, '0', STR_PAD_LEFT),
+                    'latitude' => $coordinates['latitude'],
+                    'longitude' => $coordinates['longitude'],
                 ]
             );
 
@@ -144,5 +158,33 @@ class InitialDataSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    private function generateCoordinatesWithinRadius(float $originLatitude, float $originLongitude, float $maxRadiusKm): array
+    {
+        $earthRadiusKm = 6371;
+        $distanceKm = lcg_value() * $maxRadiusKm;
+        $angularDistance = $distanceKm / $earthRadiusKm;
+        $bearing = lcg_value() * 2 * M_PI;
+
+        $originLatitudeRad = deg2rad($originLatitude);
+        $originLongitudeRad = deg2rad($originLongitude);
+
+        $latitudeRad = asin(
+            sin($originLatitudeRad) * cos($angularDistance)
+            + cos($originLatitudeRad) * sin($angularDistance) * cos($bearing)
+        );
+
+        $longitudeRad = $originLongitudeRad + atan2(
+            sin($bearing) * sin($angularDistance) * cos($originLatitudeRad),
+            cos($angularDistance) - sin($originLatitudeRad) * sin($latitudeRad)
+        );
+
+        $normalizedLongitude = fmod((rad2deg($longitudeRad) + 540), 360) - 180;
+
+        return [
+            'latitude' => round(rad2deg($latitudeRad), 7),
+            'longitude' => round($normalizedLongitude, 7),
+        ];
     }
 }

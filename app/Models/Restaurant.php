@@ -14,7 +14,14 @@ class Restaurant extends Model
         'description',
         'address',
         'phone',
+        'latitude',
+        'longitude',
         'manager_id'
+    ];
+
+    protected $casts = [
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     public function manager()
