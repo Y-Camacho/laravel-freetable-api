@@ -15,8 +15,10 @@ use Illuminate\Support\Str;
 class InitialDataSeeder extends Seeder
 {
     private const BASE_LATITUDE = 41.790945;
-
+    // private const BASE_LATITUDE = 37.4219983;
+    
     private const BASE_LONGITUDE = 0.813946;
+    // private const BASE_LONGITUDE = -122.084;
 
     private const MAX_RADIUS_KM = 20;
 
